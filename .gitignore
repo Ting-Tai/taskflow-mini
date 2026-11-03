@@ -1,0 +1,19 @@
+# Java / Maven
+target/
+*.class
+*.log
+
+# IDE
+.idea/
+*.iml
+out/
+
+# Node / uniapp
+node_modules/
+unpackage/
+dist/
+.hbuilderx/
+
+# OS
+.DS_Store
+Thumbs.db
