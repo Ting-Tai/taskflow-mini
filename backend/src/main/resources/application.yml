@@ -4,6 +4,24 @@ server:
 spring:
   application:
     name: taskflow-mini-backend
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    # 本地库：taskflow_mini，时区必须显式指定，否则 LocalDateTime 会差 8 小时
+    url: "jdbc:mysql://127.0.0.1:3306/taskflow_mini?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true"
+    username: root
+    password: root
+
+mybatis-plus:
+  configuration:
+    # 数据库 snake_case 字段 -> Java camelCase 属性（due_date -> dueDate）
+    map-underscore-to-camel-case: true
+    # 控制台打印执行的 SQL，联调阶段必备；上线前关掉
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    banner: false
+    db-config:
+      # 主键由 MySQL 自增生成，不要用 MP 的雪花 ID
+      id-type: auto
 
 logging:
   level:
