@@ -1,6 +1,7 @@
 package com.example.taskflowmini.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.example.taskflowmini.dto.TaskUpdateRequest;
 import com.example.taskflowmini.entity.Task;
 
 import java.util.List;
@@ -19,4 +20,20 @@ public interface TaskService extends IService<Task> {
      * 新建任务。状态固定为 TODO，优先级为空时默认 MEDIUM。
      */
     Task createTask(Task task);
+
+    /**
+     * 编辑任务，只更新请求里传了值的字段。
+     * 任务不存在时抛 NotFoundException。
+     */
+    Task updateTask(Long id, TaskUpdateRequest request);
+
+    /**
+     * 切换任务状态（TODO / DONE）。
+     */
+    Task updateStatus(Long id, String status);
+
+    /**
+     * 删除任务，不存在时抛 NotFoundException。
+     */
+    void deleteTask(Long id);
 }

@@ -2,7 +2,9 @@ package com.example.taskflowmini.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.example.taskflowmini.dto.TaskUpdateRequest;
 import com.example.taskflowmini.entity.Task;
+import com.example.taskflowmini.exception.NotFoundException;
 import com.example.taskflowmini.mapper.TaskMapper;
 import com.example.taskflowmini.service.TaskService;
 import org.springframework.stereotype.Service;
@@ -54,5 +56,74 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper, Task> implements Ta
         this.save(task);
         // 重新查一次，把数据库生成的 created_at / updated_at 带回给前端
         return this.getById(task.getId());
+    }
+
+    @Override
+    public Task updateTask(Long id, TaskUpdateRequest request) {
+        requireExists(id);
+
+        Task patch = new Task();
+        patch.setId(id);
+        boolean changed = false;
+
+        if (request.getTitle() != null) {
+            String title = request.getTitle().trim();
+            if (title.isEmpty()) {
+                throw new IllegalArgumentException("标题不能为空");
+            }
+            patch.setTitle(title);
+            changed = true;
+        }
+        if (request.getDescription() != null) {
+            patch.setDescription(request.getDescription());
+            changed = true;
+        }
+        if (request.getPriority() != null) {
+            patch.setPriority(request.getPriority().trim().toUpperCase());
+            changed = true;
+        }
+        if (request.getDueDate() != null) {
+            patch.setDueDate(request.getDueDate());
+            changed = true;
+        }
+
+        if (!changed) {
+            throw new IllegalArgumentException("没有需要更新的字段");
+        }
+
+        // MyBatis-Plus 默认只更新非 null 字段，所以 patch 里没赋值的列不会进 SQL
+        this.updateById(patch);
+        return this.getById(id);
+    }
+
+    @Override
+    public Task updateStatus(Long id, String status) {
+        requireExists(id);
+
+        String normalized = status.trim().toUpperCase();
+        if (!VALID_STATUS.contains(normalized)) {
+            throw new IllegalArgumentException("状态只能是 TODO 或 DONE");
+        }
+
+        Task patch = new Task();
+        patch.setId(id);
+        patch.setStatus(normalized);
+        this.updateById(patch);
+        return this.getById(id);
+    }
+
+    @Override
+    public void deleteTask(Long id) {
+        // removeById 对不存在的 id 返回 false，不会抛异常，所以要自己判断
+        boolean removed = this.removeById(id);
+        if (!removed) {
+            throw new NotFoundException("任务不存在，id=" + id);
+        }
+    }
+
+    private void requireExists(Long id) {
+        if (this.getById(id) == null) {
+            throw new NotFoundException("任务不存在，id=" + id);
+        }
     }
 }

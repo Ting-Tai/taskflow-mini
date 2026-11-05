@@ -1,11 +1,17 @@
 package com.example.taskflowmini.controller;
 
 import com.example.taskflowmini.common.Result;
+import com.example.taskflowmini.dto.StatusUpdateRequest;
+import com.example.taskflowmini.dto.TaskUpdateRequest;
 import com.example.taskflowmini.entity.Task;
 import com.example.taskflowmini.service.TaskService;
 import jakarta.validation.Valid;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -33,8 +39,40 @@ public class TaskController {
         return Result.success(taskService.listTasks(status, keyword));
     }
 
+    /**
+     * POST /api/tasks
+     */
     @PostMapping
     public Result<Task> create(@Valid @RequestBody Task task) {
         return Result.success(taskService.createTask(task));
+    }
+
+    /**
+     * PUT /api/tasks/{id}
+     * 部分更新：只改请求体里传了的字段，状态不在这个接口里改。
+     */
+    @PutMapping("/{id}")
+    public Result<Task> update(@PathVariable Long id,
+                               @Valid @RequestBody TaskUpdateRequest request) {
+        return Result.success(taskService.updateTask(id, request));
+    }
+
+    /**
+     * PATCH /api/tasks/{id}/status
+     * 只切状态，请求体：{"status":"DONE"}
+     */
+    @PatchMapping("/{id}/status")
+    public Result<Task> updateStatus(@PathVariable Long id,
+                                     @Valid @RequestBody StatusUpdateRequest request) {
+        return Result.success(taskService.updateStatus(id, request.getStatus()));
+    }
+
+    /**
+     * DELETE /api/tasks/{id}
+     */
+    @DeleteMapping("/{id}")
+    public Result<Void> delete(@PathVariable Long id) {
+        taskService.deleteTask(id);
+        return Result.success(null);
     }
 }

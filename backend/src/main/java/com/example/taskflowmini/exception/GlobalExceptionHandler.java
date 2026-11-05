@@ -38,6 +38,13 @@ public class GlobalExceptionHandler {
         return Result.error(400, e.getMessage());
     }
 
+    /** 任务不存在（PUT / PATCH / DELETE 传了不存在的 id） */
+    @ExceptionHandler(NotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public Result<Void> handleTaskNotFound(NotFoundException e) {
+        return Result.error(404, e.getMessage());
+    }
+
     /** 请求体不是合法 JSON，或日期格式不对（例如传了 2026/11/08） */
     @ExceptionHandler(HttpMessageNotReadableException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
