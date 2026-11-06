@@ -2,6 +2,7 @@ package com.example.taskflowmini.controller;
 
 import com.example.taskflowmini.common.Result;
 import com.example.taskflowmini.dto.StatusUpdateRequest;
+import com.example.taskflowmini.dto.TaskStats;
 import com.example.taskflowmini.dto.TaskUpdateRequest;
 import com.example.taskflowmini.entity.Task;
 import com.example.taskflowmini.service.TaskService;
@@ -74,5 +75,15 @@ public class TaskController {
     public Result<Void> delete(@PathVariable Long id) {
         taskService.deleteTask(id);
         return Result.success(null);
+    }
+
+    /**
+     * GET /api/tasks/stats
+     * 返回总任务数、待办数、已完成数。
+     * 注意放在 /{id} 类路径之前不会冲突：Spring 优先匹配字面量路径。
+     */
+    @GetMapping("/stats")
+    public Result<TaskStats> stats() {
+        return Result.success(taskService.getStats());
     }
 }

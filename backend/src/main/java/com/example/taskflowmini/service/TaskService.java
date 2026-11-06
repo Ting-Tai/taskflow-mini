@@ -1,6 +1,7 @@
 package com.example.taskflowmini.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.example.taskflowmini.dto.TaskStats;
 import com.example.taskflowmini.dto.TaskUpdateRequest;
 import com.example.taskflowmini.entity.Task;
 
@@ -36,4 +37,9 @@ public interface TaskService extends IService<Task> {
      * 删除任务，不存在时抛 NotFoundException。
      */
     void deleteTask(Long id);
+
+    /**
+     * 统计：总任务数、待办数、已完成数。
+     */
+    TaskStats getStats();
 }

@@ -2,6 +2,7 @@ package com.example.taskflowmini.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.example.taskflowmini.dto.TaskStats;
 import com.example.taskflowmini.dto.TaskUpdateRequest;
 import com.example.taskflowmini.entity.Task;
 import com.example.taskflowmini.exception.NotFoundException;
@@ -119,6 +120,14 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper, Task> implements Ta
         if (!removed) {
             throw new NotFoundException("任务不存在，id=" + id);
         }
+    }
+
+    @Override
+    public TaskStats getStats() {
+        // baseMapper 是 ServiceImpl 给的字段，直接调 Mapper 上的自定义 SQL
+        TaskStats stats = baseMapper.selectStats();
+        // 聚合查询总会返回一行，但兜一下比 NPE 好
+        return stats == null ? new TaskStats(0, 0, 0) : stats;
     }
 
     private void requireExists(Long id) {
